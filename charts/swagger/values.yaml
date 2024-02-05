@@ -1,0 +1,120 @@
+# Default values for swagger.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+nameOverride: ""
+fullnameOverride: ""
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+serviceAccount:
+  create: true
+  annotations: {}
+  # If not set and create = true, a name is generated using the fullname template
+  name: ""
+
+### jsonSwagger or private_s3_Swagger must be set
+### private_s3_Swagger will override jsonSwagger
+swaggerui:
+  replicaCount: 1
+  imagePullSecrets: []
+  image:
+    repository: swaggerapi/swagger-ui
+    pullPolicy: IfNotPresent
+    tag: "v5.11.2"
+
+  ### Common environment variables
+  API_KEY: ""
+  BASE_URL: "/"
+  CORS: true
+  EMBEDDING: false
+
+  ### Extra environment variables
+  extraEnv: []
+  # - name: ENV01
+  #   value: value01
+
+  ### Public URL for Swagger config file (SWAGGER_JSON_URL)
+  jsonSwagger: "https://petstore.swagger.io/v2/swagger.json"
+  
+  ### For hosting Swagger config file within private S3 bucket
+  private_s3_Swagger:
+    enabled: false
+    s3_uri: "s3://bucket_name/object"
+    file_name: "swagger.json"
+    irsa: "arn:aws:iam::account_id:role/irsa_name"
+    region: "ap-southeast-1"
+    image:
+      repository: amazon/aws-cli
+      pullPolicy: IfNotPresent
+      tag: "2.15.15"
+
+  podAnnotations: {}
+  podLabels: {}
+  podSecurityContext: {}
+  securityContext: {}
+  resources: {}
+  nodeSelector: {}
+  affinity: {}
+  tolerations: []
+  
+  service:
+    type: ClusterIP
+    port: 8080
+    annotations: {}
+    externalIPs: []
+    loadBalancerIP: ""
+    loadBalancerSourceRanges: []
+
+  ingress:
+    enabled: false
+    className: ""
+    annotations: {}
+    hosts:
+      - host: chart-example.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls: []
+
+### Locally deployed Swagger validator
+validator:
+  enabled: false
+  replicaCount: 1
+  imagePullSecrets: []
+  image:
+    repository: swaggerapi/swagger-validator-v2
+    pullPolicy: IfNotPresent
+    tag: "v2.1.4"
+  extraEnv: []  
+  podAnnotations: {}
+  podLabels: {}
+  podSecurityContext: {}
+  securityContext: {}  
+  resources: {} 
+  nodeSelector: {}
+  affinity: {}
+  tolerations: []
+
+  service:  
+    type: ClusterIP
+    port: 8080
+    annotations: {}
+    externalIPs: []
+    loadBalancerIP: ""
+    loadBalancerSourceRanges: []
+
+  ingress:
+    enabled: true
+    className: ""
+    annotations: {}
+    hosts:
+      - host: chart-example.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls: []

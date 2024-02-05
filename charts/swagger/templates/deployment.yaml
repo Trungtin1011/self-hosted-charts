@@ -1,0 +1,127 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "swagger.fullname" . }}
+  labels:
+    {{- include "swagger.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.swaggerui.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "swagger.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.swaggerui.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "swagger.labels" . | nindent 8 }}
+	      {{- with .Values.swaggerui.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.swaggerui.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "swagger.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.swaggerui.podSecurityContext | nindent 8 }}
+      {{- if .Values.swaggerui.private_s3_Swagger.enabled }}
+      initContainers:
+        - name: init-downloader
+          image: "{{ .Values.swaggerui.private_s3_Swagger.image.repository }}:{{ .Values.swaggerui.private_s3_Swagger.image.tag | default .Chart.AppVersion }}" 
+          imagePullPolicy: {{ .Values.swaggerui.private_s3_Swagger.image.pullPolicy }}
+          command: ["sh", "-c"]
+          args: {{ (printf "[\"aws s3 cp %s /api-doc\"]" .Values.swaggerui.private_s3_Swagger.s3_uri ) }}
+          volumeMounts:
+          - mountPath: /api-doc
+            name: swagger-config
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.swaggerui.securityContext | nindent 12 }}
+          image: "{{ .Values.swaggerui.image.repository }}:{{ .Values.swaggerui.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.swaggerui.image.pullPolicy }}
+          volumeMounts:
+          - mountPath: /api-doc
+            name: swagger-config
+          env:
+          {{- with .Values.swaggerui.extraEnv }}
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
+          {{- with .Values.swaggerui.API_KEY }}
+          - name: API_KEY
+            value: {{ . | quote }}
+          {{- end }}
+          {{- with .Values.swaggerui.service.port  }}
+          - name: PORT
+            value: {{ . | quote }}
+          {{- end }}
+          {{- with .Values.swaggerui.service.port  }}
+          - name: PORT_IPV6
+            value: {{ . | quote }}
+          {{- end }}
+          {{- with .Values.swaggerui.BASE_URL }}
+          - name: BASE_URL
+            value: {{ . | quote }}
+          {{- end }}
+          {{- with .Values.swaggerui.CORS }}
+          - name: CORS
+            value: {{ . | quote }}
+          {{- end }}
+          - name: EMBEDDING
+            value: {{ .Values.swaggerui.EMBEDDING | quote }}
+          {{- if not .Values.validator.enabled }}
+          - name: VALIDATOR_URL
+            value: "localhost"
+          {{- else if .Values.validator.enabled }}
+          {{- range .Values.validator.ingress.hosts }}
+          - name: VALIDATOR_URL
+            value: "http://{{ .host }}/validator"
+          {{- end }}
+          {{- end }}
+          {{- if and $.Values.swaggerui.jsonSwagger (not $.Values.swaggerui.private_s3_Swagger.enabled) }}
+          - name: SWAGGER_JSON_URL
+            value: {{ .Values.swaggerui.jsonSwagger | quote }}
+          {{- end }}
+          {{- if .Values.swaggerui.private_s3_Swagger.enabled }}
+          - name: SWAGGER_JSON
+            value: /api-doc/{{ .Values.swaggerui.private_s3_Swagger.file_name }}
+          - name: AWS_REGION
+            value: {{ .Values.swaggerui.private_s3_Swagger.region }}
+          {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          ports:
+            - name: http
+              containerPort: {{ .Values.swaggerui.service.port }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.swaggerui.resources | nindent 12 }}
+      {{- with .Values.swaggerui.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.swaggerui.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.swaggerui.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: swagger-config
+          emptyDir: {}
+      
