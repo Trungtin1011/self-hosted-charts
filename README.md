@@ -1,56 +1,42 @@
-# swagger-ui-helm
+# Swagger UI Helm Chart for Kubernetes
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-
-## Introduction
+## Before you begin
 
 This [Helm](https://github.com/kubernetes/helm) chart installs [swagger-ui](https://github.com/swagger-ui-api/swagger-ui) in a Kubernetes cluster.
 
-## Prerequisites
+The prerequisites for this Helm chart is a working **Kubernetes Cluster** and **Helm** installed.
 
-- Kubernetes cluster
-- Helm 3.0.0+
-- StorageClass or PersistentVolume
+If you don't have a Kubernetes Cluster, create one with [minikube](https://minikube.sigs.k8s.io/docs/start/).
+
+To install Helm, see [Helm Installation guide](https://helm.sh/docs/intro/install/).
+
 
 ## Installation
 
-### Add Helm repository
+To add Swagger UI helm repository, run command:
 
 ```bash
-helm repo add
+helm repo add swagger https://trungtin1011.github.io/swagger-ui-helm/
 helm repo update
 ```
 
-### Configure the chart
 
-The following items can be set via `--set` flag during installation or configured by editing the `values.yaml` directly (need to download the chart first).
-
-#### Configure the way how to expose swagger-ui service:
-
-- **Ingress**: The ingress controller must be installed in the Kubernetes cluster.
-- **ClusterIP**: Exposes the service on a cluster-internal IP. Choosing this value makes the service only reachable from within the cluster.
-- **NodePort**: Exposes the service on each Node’s IP at a static port (the NodePort). You’ll be able to contact the NodePort service, from outside the cluster, by requesting `NodeIP:NodePort`.
-- **LoadBalancer**: Exposes the service externally using a cloud provider’s load balancer.
-
-### Install the chart
-
-Install the swagger-ui helm chart with a release name `my-release`:
+To install the Swagger UI helm chart with a release name `my-release` in `swagger` namespace, run command:
 
 ```bash
-helm install my-release
+helm install -n swagger --create-namespace my-release swagger/swagger-ui-helm
 ```
 
-## Uninstallation
 
-To uninstall/delete the `my-release` deployment:
+To uninstall/delete the `my-release` deployment, run command:
 
 ```bash
 helm delete my-release
 ```
 
-## Important Configurations
+## Configuration
 
-The following table lists the most improtant configurable parameters of the swagger-ui-helm chart and the default values.
+The following table lists the most improtant configurable parameters of the swagger-ui-helm chart and the default values. Those parameters can be set via `--set` flag during installation or configured by editing the `values.yaml` directly.
 
 | Parameter                                           | Description                                                             | Default                                           |
 | --------------------------------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------- |
