@@ -45,7 +45,6 @@ kubeconfig
 
 # IntelliJ Files
 **/*.idea*
-*.tgz
 
 # Common backup files
 *.swp
