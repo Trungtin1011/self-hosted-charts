@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  swagger:
+  - apiVersion: v2
+    appVersion: v5.11.2
+    created: "2024-09-21T20:30:30.295855+07:00"
+    description: A Helm chart for Kubernetes
+    digest: 985b5c5e47b0b2871ea1a0b811b138de31a212e4152bd226250cc81bab4d4062
+    name: swagger
+    type: application
+    urls:
+    - https://trungtin1011.github.io/swagger-ui-helm/swagger-0.2.0.tgz
+    version: 0.2.0
+generated: "2024-09-21T20:30:30.295253+07:00"
