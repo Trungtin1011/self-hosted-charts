@@ -1,4 +1,4 @@
-# swagger-ui-helm
+# Swagger UI Helm Chart for Kubernetes
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
@@ -6,11 +6,17 @@
 
 This [Helm](https://github.com/kubernetes/helm) chart installs [swagger-ui](https://github.com/swagger-ui-api/swagger-ui) in a Kubernetes cluster.
 
-## Prerequisites
+## Before you begin
 
-- Kubernetes cluster
-- Helm 3.0.0+
-- StorageClass or PersistentVolume
+### Kubernetes Cluster
+
+If you don't have a Kubernetes Cluster, create one with
+[minikube](https://minikube.sigs.k8s.io/docs/start/).
+
+### Helm
+
+To install Helm, see [Helm Installation guide](https://helm.sh/docs/intro/install/).
+
 
 ## Installation
 
