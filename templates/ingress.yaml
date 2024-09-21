@@ -23,9 +23,7 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  {{- if and .Values.swaggerui.ingress.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
   ingressClassName: {{ .Values.swaggerui.ingress.className }}
-  {{- end }}
   {{- if .Values.swaggerui.ingress.tls }}
   tls:
     {{- range .Values.swaggerui.ingress.tls }}
@@ -37,25 +35,14 @@ spec:
     {{- end }}
   {{- end }}
   rules:
-    {{- range .Values.swaggerui.ingress.hosts }}
-    - host: {{ .host | quote }}
+    - host: {{ .Values.swaggerui.ingress.host | quote }}
       http:
         paths:
-          {{- range .paths }}
-          - path: {{ .path }}
-            {{- if and .pathType (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
-            pathType: {{ .pathType }}
-            {{- end }}
+          - path: {{ .Values.swaggerui.ingress.path }}
+            pathType: {{ .Values.swaggerui.ingress.pathType }}
             backend:
-              {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
                 name: {{ $fullName }}
                 port:
                   number: {{ $svcPort }}
-              {{- else }}
-              serviceName: {{ $fullName }}
-              servicePort: {{ $svcPort }}
-              {{- end }}
-          {{- end }}
-    {{- end }}
 {{- end }}

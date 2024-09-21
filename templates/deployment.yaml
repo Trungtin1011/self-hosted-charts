@@ -5,9 +5,7 @@ metadata:
   labels:
     {{- include "swagger.labels" . | nindent 4 }}
 spec:
-  {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.swaggerui.replicaCount }}
-  {{- end }}
   selector:
     matchLabels:
       {{- include "swagger.selectorLabels" . | nindent 6 }}
@@ -30,13 +28,13 @@ spec:
       serviceAccountName: {{ include "swagger.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.swaggerui.podSecurityContext | nindent 8 }}
-      {{- if .Values.swaggerui.private_s3_Swagger.enabled }}
+      {{- if .Values.swaggerui.swagger_config_s3.enabled }}
       initContainers:
         - name: init-downloader
-          image: "{{ .Values.swaggerui.private_s3_Swagger.image.repository }}:{{ .Values.swaggerui.private_s3_Swagger.image.tag | default .Chart.AppVersion }}" 
-          imagePullPolicy: {{ .Values.swaggerui.private_s3_Swagger.image.pullPolicy }}
+          image: "{{ .Values.swaggerui.swagger_config_s3.image.repository }}:{{ .Values.swaggerui.swagger_config_s3.image.tag }}"
+          imagePullPolicy: {{ .Values.swaggerui.swagger_config_s3.image.pullPolicy }}
           command: ["sh", "-c"]
-          args: {{ (printf "[\"aws s3 cp %s /api-doc\"]" .Values.swaggerui.private_s3_Swagger.s3_uri ) }}
+          args: {{ (printf "[\"aws s3 cp %s/%s /api-doc\"]" .Values.swaggerui.swagger_config_s3.s3_bucket_uri .Values.swaggerui.swagger_config_s3.s3_config_object) }}
           volumeMounts:
           - mountPath: /api-doc
             name: swagger-config
@@ -44,17 +42,21 @@ spec:
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
-            {{- toYaml .Values.swaggerui.securityContext | nindent 12 }}
+            {{- toYaml .Values.swaggerui.containerSecurityContext | nindent 12 }}
           image: "{{ .Values.swaggerui.image.repository }}:{{ .Values.swaggerui.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.swaggerui.image.pullPolicy }}
           volumeMounts:
           - mountPath: /api-doc
             name: swagger-config
+          {{- if $.Values.swaggerui.swagger_config_local }}
+          - mountPath: /api-doc/local-config
+            name: local-config
+          {{- end }}
           env:
           {{- with .Values.swaggerui.extraEnv }}
           {{- toYaml . | nindent 10 }}
           {{- end }}
-          {{- with .Values.swaggerui.API_KEY }}
+          {{- with .Values.swaggerui.apikey }}
           - name: API_KEY
             value: {{ . | quote }}
           {{- end }}
@@ -66,49 +68,87 @@ spec:
           - name: PORT_IPV6
             value: {{ . | quote }}
           {{- end }}
-          {{- with .Values.swaggerui.BASE_URL }}
+          {{- with .Values.swaggerui.base_url }}
           - name: BASE_URL
             value: {{ . | quote }}
           {{- end }}
-          {{- with .Values.swaggerui.CORS }}
+          {{- with .Values.swaggerui.enable_cors }}
           - name: CORS
             value: {{ . | quote }}
           {{- end }}
           - name: EMBEDDING
-            value: {{ .Values.swaggerui.EMBEDDING | quote }}
-          {{- if not .Values.validator.enabled }}
+            value: {{ .Values.swaggerui.allow_embedding | quote }}
+          {{- if .Values.swaggerui.disable_validation }}
           - name: VALIDATOR_URL
             value: "localhost"
-          {{- else if .Values.validator.enabled }}
-          {{- range .Values.validator.ingress.hosts }}
+          {{- else if and ( not .Values.swaggerui.disable_validation ) ( not .Values.localValidation.enabled ) }}
           - name: VALIDATOR_URL
-            value: "http://{{ .host }}/validator"
+            value: "https://validator.swagger.io/validator"
+          {{- else }}
+          - name: VALIDATOR_URL
+            value: "http://localhost:8081/validator"
           {{- end }}
-          {{- end }}
-          {{- if and $.Values.swaggerui.jsonSwagger (not $.Values.swaggerui.private_s3_Swagger.enabled) }}
-          - name: SWAGGER_JSON_URL
-            value: {{ .Values.swaggerui.jsonSwagger | quote }}
-          {{- end }}
-          {{- if .Values.swaggerui.private_s3_Swagger.enabled }}
+          {{- if and .Values.swaggerui.swagger_config_s3.enabled }}
           - name: SWAGGER_JSON
-            value: /api-doc/{{ .Values.swaggerui.private_s3_Swagger.file_name }}
+            value: /api-doc/{{ .Values.swaggerui.swagger_config_s3.file_name }}
           - name: AWS_REGION
-            value: {{ .Values.swaggerui.private_s3_Swagger.region }}
+            value: {{ .Values.swaggerui.swagger_config_s3.aws_region }}
+          {{- else if and (not .Values.swaggerui.swagger_config_s3.enabled) ($.Values.swaggerui.swagger_config_local) }}
+          - name: SWAGGER_JSON
+            value: /api-doc/local-config/swagger.json
+          {{- else }}
+          - name: SWAGGER_JSON_URL
+            value: {{ .Values.swaggerui.swagger_config_public | quote }}
           {{- end }}
+          {{- if $.Values.swaggerui.livenessProbe.enabled }}
           livenessProbe:
             httpGet:
-              path: /
-              port: http
+              path: {{ .Values.swaggerui.livenessProbe.httpGet.path }}
+              port: {{ .Values.swaggerui.livenessProbe.httpGet.port }}
+            initialDelaySeconds: {{ .Values.swaggerui.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.swaggerui.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.swaggerui.livenessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.swaggerui.livenessProbe.failureThreshold }}
+            successThreshold: {{ .Values.swaggerui.livenessProbe.successThreshold }}
+          {{- end }}
+          {{- if $.Values.swaggerui.readinessProbe.enabled }}
           readinessProbe:
             httpGet:
-              path: /
-              port: http
+              path: {{ .Values.swaggerui.readinessProbe.httpGet.path }}
+              port: {{ .Values.swaggerui.readinessProbe.httpGet.port }}
+            initialDelaySeconds: {{ .Values.swaggerui.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.swaggerui.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.swaggerui.readinessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.swaggerui.readinessProbe.failureThreshold }}
+            successThreshold: {{ .Values.swaggerui.readinessProbe.successThreshold }}
+          {{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.swaggerui.service.port }}
               protocol: TCP
           resources:
             {{- toYaml .Values.swaggerui.resources | nindent 12 }}
+        {{- if $.Values.localValidation.enabled }}
+        - name: {{ .Chart.Name }}-validator
+          securityContext:
+            {{- toYaml .Values.localValidation.containerSecurityContext | nindent 12 }}
+          image: "{{ .Values.localValidation.image.repository }}:{{ .Values.localValidation.image.tag }}"
+          imagePullPolicy: {{ .Values.localValidation.image.pullPolicy }}
+          env:
+          {{- with .Values.localValidation.extraEnv }}
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
+          - name: REJECT_LOCAL
+            value: "false"
+          - name: REJECT_REDIRECT
+            value: "false"
+          ports:
+            - name: http
+              containerPort: 8081
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.localValidation.resources | nindent 12 }}
+        {{- end }}
       {{- with .Values.swaggerui.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -124,4 +164,8 @@ spec:
       volumes:
         - name: swagger-config
           emptyDir: {}
-      
+        {{- if $.Values.swaggerui.swagger_config_local }}
+        - name: local-config
+          secret:
+            secretName: {{ $.Values.swaggerui.swagger_config_local }}
+        {{- end }}
