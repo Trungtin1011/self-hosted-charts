@@ -11,20 +11,19 @@ If you don't have a Kubernetes Cluster, create one with [minikube](https://minik
 To install Helm, see [Helm Installation guide](https://helm.sh/docs/intro/install/).
 
 
-## Installation
+## Installation and Upgrading
 
 To add Swagger UI helm repository, run command:
 
 ```bash
 helm repo add swagger https://trungtin1011.github.io/swagger-ui-helm/
-helm repo update
 ```
 
 
 To install the Swagger UI helm chart with a release name `my-release` in `swagger` namespace, run command:
 
 ```bash
-helm install -n swagger --create-namespace my-release swagger/swagger-ui-helm
+helm install -n swagger --create-namespace my-release swagger/swagger
 ```
 
 
@@ -33,6 +32,14 @@ To uninstall/delete the `my-release` deployment, run command:
 ```bash
 helm delete my-release
 ```
+
+To update latest changes of the charts from the Helm repository, run commands:
+```bash
+helm repo update
+
+helm -n swagger upgrade my-release swagger/swagger
+```
+
 
 ## Configuration
 
@@ -86,7 +93,7 @@ The following table lists the most improtant configurable parameters of the swag
 - `swaggerui.tolerations`: Tolerations for Swagger UI pods assignment. Default = `[]`
 
 
-### Swagger UI Validator**
+### Swagger UI Validator
 - `localValidation.enabled`: Whether to enable local validator for Swagger resources. Default = `false`
 - `localValidation.imagePullSecrets`: List of names of secrets containing docker registry credentials. Default = `[]`
 - `localValidation.image.repository`: Swagger validator image repository. Default = `swaggerapi/swagger-validator-v2`
