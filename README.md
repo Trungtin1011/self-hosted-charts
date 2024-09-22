@@ -2,7 +2,7 @@
 
 ## Before you begin
 
-This [Helm](https://github.com/kubernetes/helm) chart installs [swagger-ui](https://github.com/swagger-ui-api/swagger-ui) in a Kubernetes cluster.
+This [Helm](https://github.com/kubernetes/helm) chart installs [swagger-ui](https://github.com/swagger-api/swagger-ui) in a Kubernetes cluster.
 
 The prerequisites for this Helm chart is a working **Kubernetes Cluster** and **Helm** installed.
 
@@ -41,23 +41,19 @@ helm -n swagger upgrade my-release swagger/swagger
 ```
 
 
-## Configuration
+## Important Configuration Parameters
 
 The following table lists the most improtant configurable parameters of the swagger-ui-helm chart and the default values. Those parameters can be set via `--set` flag during installation or configured by editing the `values.yaml` directly.
 
+Parameters that are not as important can be found in `values.yaml` file.
+
+
 ### Swagger UI deployment
-- `swaggerui.replicaCount`: Number of replicas. Default = `1`
-- `swaggerui.imagePullSecrets`: List of names of secrets containing docker registry credentials. Default = `[]`
-- `swaggerui.image.repository`: Swagger UI Image name. Default = `swaggerapi/swagger-ui`
-- `swaggerui.image.tag`: Swagger UI Image tag. Default = `v5.11.2`
-- `swaggerui.image.pullPolicy`: Swagger UI Image pull policy. Default = `IfNotPresent`
 - `swaggerui.apikey`: API Key value. Default = `""`
 - `swaggerui.base_url`: The base URL of the web application. Default =  `/`
 - `swaggerui.enable_cors`: Enable CORS support. Default = `true`
 - `swaggerui.allow_embedding`: Allow/disallow embedding. Default = `false`
 - `swaggerui.disable_validation`: Disable Swagger validator. Default = `false`
-- `swaggerui.extraEnv`: Additional environment variable. Default = `[]`
-- `swaggerui.resources`: Swagger UI container's CPU/Memory resource requests/limits. Default = `{}`
 - `swaggerui.swagger_config_local`: Existing secret that contains swagger.json file. Default = `""`
 - `swaggerui.swagger_config_public`: URL to a swagger.json file on an external host. Default = `https://petstore.swagger.io/v2/swagger.json`
 - `swaggerui.swagger_config_s3.enabled`: Configs for swagger.json file that stored in private AWS S3 bucket. Default = `false`
@@ -68,40 +64,14 @@ The following table lists the most improtant configurable parameters of the swag
 - `swaggerui.swagger_config_s3.image.repository`: Image to run initContainer. Default = `amazon/aws-cli`
 - `swaggerui.swagger_config_s3.image.pullPolicy`: Image pull policy. Default = `IfNotPresent`
 - `swaggerui.swagger_config_s3.image.tag`: Image tag for initContainer. Default = `2.15.15`
-- `swaggerui.livenessProbe.enabled`: Whether to enable Liveness Probe settings. Default = true`
-- `swaggerui.livenessProbe.httpGet.path`: Liveness Probe HTTP path. Default = `/`
-- `swaggerui.livenessProbe.httpGet.port`: Liveness Probe HTTP port. Default = `http`
-- `swaggerui.livenessProbe.initialDelaySeconds`: Liveness Probe initialDelaySeconds. Default = `30`
-- `swaggerui.livenessProbe.periodSeconds`: Liveness Probe periodSeconds. Default = `30`
-- `swaggerui.livenessProbe.timeoutSeconds`: Liveness Probe timeoutSeconds. Default = `10`
-- `swaggerui.livenessProbe.failureThreshold`: Liveness Probe failureThreshold. Default = `3`
-- `swaggerui.livenessProbe.successThreshold`: Liveness Probe successThreshold. Default = `1`
-- `swaggerui.readinessProbe.enabled`: Whether to enable Rediness Probe settings. Default = `true`
-- `swaggerui.readinessProbe.httpGet.path`: Rediness Probe HTTP path. Default = `/`
-- `swaggerui.readinessProbe.httpGet.port`: Rediness Probe HTTP port. Default = `http`
-- `swaggerui.readinessProbe.initialDelaySeconds`: Rediness Probe initialDelaySeconds. Default = `30`
-- `swaggerui.readinessProbe.periodSeconds`: Rediness Probe periodSeconds. Default = `30`
-- `swaggerui.readinessProbe.timeoutSeconds`: Rediness Probe timeoutSeconds. Default = `10`
-- `swaggerui.readinessProbe.failureThreshold`: Rediness Probe failureThreshold. Default =  `3`
-- `swaggerui.readinessProbe.successThreshold`: Rediness Probe successThreshold. Default = `1`
-- `swaggerui.podAnnotations`: Extra annotations for Swagger UI pods. Default = `{}`
-- `swaggerui.podLabels`: Extra labels for Swagger UI pods. Default = `{}`
-- `swaggerui.podSecurityContext`: Swagger UI Pods Security Context. Default = `{}
-- `swaggerui.containerSecurityContext`: Swagger UI Container Security Context. Default = `{}`
-- `swaggerui.nodeSelector`: Node labels selector for Swagger UI pods assignment. Default = `{}`
-- `swaggerui.affinity`: Affinity for Swagger UI pods assignment. Default = `{}`
-- `swaggerui.tolerations`: Tolerations for Swagger UI pods assignment. Default = `[]`
 
 
 ### Swagger UI Validator
 - `localValidation.enabled`: Whether to enable local validator for Swagger resources. Default = `false`
-- `localValidation.imagePullSecrets`: List of names of secrets containing docker registry credentials. Default = `[]`
 - `localValidation.image.repository`: Swagger validator image repository. Default = `swaggerapi/swagger-validator-v2`
-- `localValidation.image.pullPolicy`: Swagger validator image pull policy. Default = `IfNotPresent`
 - `localValidation.image.tag`: Swagger validator image tag. Default = `v2.1.4`
 - `localValidation.resources`: Swagger validator container's CPU/Memory resource requests/limits. Default = `{}`
 - `localValidation.extraEnv`: Swagger validator extra environment variables. Default = `[]`
-- `localValidation.containerSecurityContext`: Swagger validator Container security contexts. Default = `{}`
 
 
 ### Service
