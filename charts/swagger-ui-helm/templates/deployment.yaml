@@ -85,8 +85,13 @@ spec:
           - name: VALIDATOR_URL
             value: "https://validator.swagger.io/validator"
           {{- else }}
+          {{- if .Values.localValidation.ingress.enabled }}
           - name: VALIDATOR_URL
-            value: "http://localhost:8081/validator"
+            value: http://{{ .Values.localValidation.ingress.host }}/validator
+          {{- else }}
+          - name: VALIDATOR_URL
+            value: http://swagger-validator:8080/validator
+          {{- end }}
           {{- end }}
           {{- if and .Values.swaggerui.swagger_config_s3.enabled }}
           - name: SWAGGER_JSON
@@ -128,27 +133,6 @@ spec:
               protocol: TCP
           resources:
             {{- toYaml .Values.swaggerui.resources | nindent 12 }}
-        {{- if $.Values.localValidation.enabled }}
-        - name: {{ .Chart.Name }}-validator
-          securityContext:
-            {{- toYaml .Values.localValidation.containerSecurityContext | nindent 12 }}
-          image: "{{ .Values.localValidation.image.repository }}:{{ .Values.localValidation.image.tag }}"
-          imagePullPolicy: {{ .Values.localValidation.image.pullPolicy }}
-          env:
-          {{- with .Values.localValidation.extraEnv }}
-          {{- toYaml . | nindent 10 }}
-          {{- end }}
-          - name: REJECT_LOCAL
-            value: "false"
-          - name: REJECT_REDIRECT
-            value: "false"
-          ports:
-            - name: http
-              containerPort: 8081
-              protocol: TCP
-          resources:
-            {{- toYaml .Values.localValidation.resources | nindent 12 }}
-        {{- end }}
       {{- with .Values.swaggerui.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -169,3 +153,65 @@ spec:
           secret:
             secretName: {{ $.Values.swaggerui.swagger_config_local }}
         {{- end }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "swagger.fullname" . }}-validator
+  labels:
+    {{- include "swaggervalidator.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "swaggervalidator.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.localValidation.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "swaggervalidator.labels" . | nindent 8 }}
+	      {{- with .Values.localValidation.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.localValidation.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.localValidation.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}-validator
+          securityContext:
+            {{- toYaml .Values.localValidation.containerSecurityContext | nindent 12 }}
+          image: "{{ .Values.localValidation.image.repository }}:{{ .Values.localValidation.image.tag }}"
+          imagePullPolicy: {{ .Values.localValidation.image.pullPolicy }}
+          env:
+          {{- with .Values.localValidation.extraEnv }}
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
+          - name: REJECT_LOCAL
+            value: "false"
+          - name: REJECT_REDIRECT
+            value: "false"
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.localValidation.resources | nindent 12 }}
+      {{- with .Values.localValidation.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.localValidation.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.localValidation.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

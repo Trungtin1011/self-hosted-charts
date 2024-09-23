@@ -11,7 +11,7 @@ fullnameOverride: ""
 ## ServiceAccount configuration
 ##
 serviceAccount:
-  create: true
+  create: false
   annotations: {}
   # If not set and create = true, a name is generated using the fullname template
   name: ""
@@ -25,7 +25,7 @@ swaggerui:
   image:
     repository: swaggerapi/swagger-ui
     pullPolicy: IfNotPresent
-    tag: "v5.11.2"
+    tag: "v5.17.14"
 
   ## Common environment variables for Swagger UI pod
   ##
@@ -132,7 +132,7 @@ swaggerui:
   ##
   service:
     type: ClusterIP
-    port: 8080
+    port: 80
     annotations: {}
     externalIPs: []
     loadBalancerIP: ""
@@ -156,7 +156,8 @@ localValidation:
   image:
     repository: swaggerapi/swagger-validator-v2
     pullPolicy: IfNotPresent
-    tag: "v2.1.4"
+    tag: "v2.1.5"
+  serviceType: ClusterIP
 
   ## Configure resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
@@ -170,7 +171,46 @@ localValidation:
   ##
   extraEnv: []
 
+  ## Extra annotations for pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+  ##
+  podAnnotations: {}
+
+  ## Extra labels for pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+  ##
+  podLabels: {}
+
+  ## Configure Pods Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ##
+  podSecurityContext: {}
+
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
   ##
   containerSecurityContext: {}
+
+  ## Node labels selector for pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
+  ##
+  nodeSelector: {}
+
+  ## Affinity for pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+  ##
+  affinity: {}
+
+  ## Tolerations for pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+  ##
+  tolerations: []
+
+  ingress:
+    enabled: false
+    className: ""
+    annotations: {}
+    host: chart-example.local
+    path: /
+    pathType: ImplementationSpecific
+    tls: []

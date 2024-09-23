@@ -31,7 +31,7 @@ Create chart name and version as used by the chart label.
 {{- end }}
 
 {{/*
-Common labels
+Common Swagger UI labels
 */}}
 {{- define "swagger.labels" -}}
 helm.sh/chart: {{ include "swagger.chart" . }}
@@ -43,12 +43,33 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
 {{/*
-Selector labels
+Common Swagger Validator labels
+*/}}
+{{- define "swaggervalidator.labels" -}}
+helm.sh/chart: {{ include "swagger.chart" . }}
+{{ include "swaggervalidator.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+{{/*
+Swagger UI Selector labels
 */}}
 {{- define "swagger.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "swagger.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
+
+{{/*
+Swagger Validator Selector labels
+*/}}
+{{- define "swaggervalidator.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "swagger.name" . }}-validator
+app.kubernetes.io/instance: {{ .Release.Name }}-validator
+{{- end }}
+
 
 {{/*
 Create the name of the service account to use

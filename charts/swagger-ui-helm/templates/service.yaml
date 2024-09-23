@@ -28,3 +28,21 @@ spec:
       name: http
   selector:
     {{- include "swagger.selectorLabels" . | nindent 4 }}
+---
+{{- if $.Values.localValidation.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "swagger.fullname" . }}-validator
+  labels:
+    {{- include "swaggervalidator.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.localValidation.serviceType }}
+  ports:
+    - port: 8080
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "swaggervalidator.selectorLabels" . | nindent 4 }}
+{{- end }}
