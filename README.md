@@ -66,14 +66,6 @@ Parameters that are not as important can be found in `values.yaml` file.
 - `swaggerui.swagger_config_s3.image.tag`: Image tag for initContainer. Default = `2.15.15`
 
 
-### Swagger UI Validator
-- `localValidation.enabled`: Whether to enable local validator for Swagger resources. Default = `false`
-- `localValidation.image.repository`: Swagger validator image repository. Default = `swaggerapi/swagger-validator-v2`
-- `localValidation.image.tag`: Swagger validator image tag. Default = `v2.1.4`
-- `localValidation.resources`: Swagger validator container's CPU/Memory resource requests/limits. Default = `{}`
-- `localValidation.extraEnv`: Swagger validator extra environment variables. Default = `[]`
-
-
 ### Service
 - `swaggerui.service.type`: Type of service for swagger-ui frontend. Default = `ClusterIP`
 - `swaggerui.service.port`: Port to expose service. Default = `8080`
@@ -91,6 +83,16 @@ Parameters that are not as important can be found in `values.yaml` file.
 - `swaggerui.ingress.tls`: Ingress TLS configuration. Default = `[]`
 - `swaggerui.ingress.className`: Ingress ClassName. Default = `""`
 - `swaggerui.ingress.pathType`: Ingress Path type. Default = `ImplementationSpecific`
+
+
+### Swagger UI Validator
+- `localValidation.enabled`: Whether to enable local validator for Swagger resources. Default = `false`
+- `localValidation.image.repository`: Swagger validator image repository. Default = `swaggerapi/swagger-validator-v2`
+- `localValidation.image.tag`: Swagger validator image tag. Default = `v2.1.4`
+- `localValidation.resources`: Swagger validator container's CPU/Memory resource requests/limits. Default = `{}`
+- `localValidation.extraEnv`: Swagger validator extra environment variables. Default = `[]`
+- `localValidation.serviceType`: Swagger validator service type. Default = `ClusterIP`
+- `localValidation.ingress.enabled`: Swagger validator ingress. Default = `false`
 
 
 ## License
