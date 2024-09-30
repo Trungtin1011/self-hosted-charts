@@ -3,4 +3,4 @@ appVersion: v5.17.14
 description: Swagger UI Helm chart for Kubernetes
 name: swagger
 type: application
-version: 0.3.0
+version: 0.3.1
