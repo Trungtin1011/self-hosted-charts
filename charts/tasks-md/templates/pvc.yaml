@@ -1,0 +1,19 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ template "tasks-md.fullname" . }}-data
+  labels:
+    {{- include "tasks-md.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.persistence.size | quote }}
+{{- if .Values.persistence.storageClassName }}
+{{- if (eq "-" .Values.persistence.storageClassName) }}
+  storageClassName: ""
+{{- else }}
+  storageClassName: "{{ .Values.persistence.storageClassName }}"
+{{- end }}
+{{- end }}
