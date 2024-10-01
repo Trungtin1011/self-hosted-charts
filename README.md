@@ -96,7 +96,7 @@ helm repo add tooling https://trungtin1011.github.io/tooling/
 To install the Tasks.md helm chart with a release name `my-release` in `task` namespace, run command:
 
 ```bash
-helm install -n task --create-namespace my-release tooling/task-md
+helm install -n task --create-namespace my-release tooling/tasks-md
 ```
 
 
@@ -104,7 +104,7 @@ To update latest changes of the charts from the Helm repository, run commands:
 ```bash
 helm repo update
 
-helm -n task upgrade my-release tooling/task-md
+helm -n task upgrade my-release tooling/tasks-md
 ```
 
 To configure the Tasks.md deployment, the configurable parameters can be found in `values.yaml` values file. Those parameters can be set via `--set` flag during installation or configured by editing the `values.yaml` directly.
