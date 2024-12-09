@@ -7,6 +7,7 @@ This [Helm](https://github.com/kubernetes/helm) chart supports installation of t
 2. [it-tools](https://github.com/CorentinTh/it-tools)
 3. [Tasks.md](https://github.com/BaldissaraMatheus/Tasks.md)
 4. [Dashy](https://github.com/lissy93/dashy)
+5. [OpenTelemetry Demo](https://github.com/Trungtin1011/opentelemetry-demo)
 
 
 The prerequisites for this Helm chart is a working **Kubernetes Cluster** and **Helm** installed.
@@ -147,6 +148,10 @@ To uninstall/delete the `my-release` deployment, run command:
 
 ```bash
 helm delete my-release
+
+### OpenTelemetry Demo
+
+Demo application for OpenTelemetry Instrumentation
 
 
 ## License

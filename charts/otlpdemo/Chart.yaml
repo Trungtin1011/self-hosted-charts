@@ -1,0 +1,7 @@
+apiVersion: v2
+name: otlpdemo
+description: A Helm chart for Kubernetes OpenTelemetry Demo application
+
+type: application
+version: 0.1.0
+appVersion: "demo"

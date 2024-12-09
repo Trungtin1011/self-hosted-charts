@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "otlpdemo.fullname" . }}-mssql
+  labels:
+    {{- include "mssql.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: 1433
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "mssql.selectorLabels" . | nindent 4 }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "otlpdemo.fullname" . }}-mssql
+  labels:
+    {{- include "mssql.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "mssql.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        instrumentation.opentelemetry.io/inject-dotnet: {{ .Values.instrumentation }}
+      labels:
+        {{- include "mssql.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ include "otlpdemo.fullname" . }}-mssql
+          securityContext:
+            {{- toYaml .Values.containerSecurityContext | nindent 12 }}
+          image: "{{ .Values.backends.mssql.repository }}:{{ .Values.backends.mssql.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: ACCEPT_EULA
+              value: "Y"
+            - name: SA_PASSWORD
+              value: "P@ssw0rd1111"
+            - name: MSSQL_PID
+              value: "Developer"
+          ports:
+            - name: http
+              containerPort: 1433
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.backends.mssql.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

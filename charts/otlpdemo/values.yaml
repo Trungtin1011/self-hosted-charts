@@ -1,0 +1,143 @@
+### OpenTelemetry Demo Helm Chart for Kubernetes
+### Author: Tin Trung Ngo
+### Contact: trungtinth1011@gmail.com
+
+## Strings for naming overrides
+##
+nameOverride: ""
+fullnameOverride: ""
+
+## ServiceAccount configuration
+##
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: false
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+### OpenTelemetry Demo configs
+### ref: https://github.com/Trungtin1011/opentelemetry-demo
+###
+replicaCount: 1
+instrumentation: namespace/instrumentation-cr
+
+imagePullSecrets: []
+image:
+  repository: trungtin1011/opentelemetry-demo
+  pullPolicy: IfNotPresent
+  tag: python-client
+
+backends:
+  caller:
+    repository: trungtin1011/opentelemetry-demo
+    pullPolicy: IfNotPresent
+    tag: python-caller
+  server:
+    repository: trungtin1011/opentelemetry-demo
+    pullPolicy: IfNotPresent
+    tag: python-server
+  dbclient:
+    repository: trungtin1011/opentelemetry-demo
+    pullPolicy: IfNotPresent
+    tag: dotnet-client
+  dbservice:
+    repository: trungtin1011/opentelemetry-demo
+    pullPolicy: IfNotPresent
+    tag: dotnet-service
+  mssql:
+    repository: trungtin1011/opentelemetry-demo
+    pullPolicy: IfNotPresent
+    tag: mssql
+    resources: {}
+
+## Array with extra environment variables to add to the pod. For example:
+## extraEnv:
+##   - name: ENV01
+##     value: "value01"
+##
+extraEnv: []
+
+## Map with extra environment variables fetched from existing secrets. For example:
+## extraEnvSecrets:
+##   AUTH_USERNAME:
+##     name: extra-secret
+##     key: username
+extraEnvSecrets: {}
+
+## Configure resource requests and limits
+## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+##
+resources: {}
+
+## Extra annotations for pods
+## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+##
+podAnnotations: {}
+
+## Extra labels for pods
+## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+##
+podLabels: {}
+
+## Configure Pods Security Context
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+##
+podSecurityContext:
+  {}
+  # fsGroup: 1000
+  # runAsGroup: 1000
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+## Configure Container Security Context
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
+##
+containerSecurityContext:
+  {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+## OpenTelemetry Demo service parameters
+##
+service:
+  type: ClusterIP
+  port: 8082
+  annotations: {}
+  externalIPs: []
+  loadBalancerIP: ""
+  loadBalancerSourceRanges: []
+
+## OpenTelemetry Demo ingress parameters
+##
+ingress:
+  enabled: false
+  className: ""
+  annotations:
+    {}
+    # kubernetes.io/tls-acme: "true"
+  host: chart-example.local
+  path: /
+  pathType: ImplementationSpecific
+  tls: []
+
+## Node labels selector for pods assignment
+## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
+##
+nodeSelector: {}
+
+## Tolerations for pods assignment
+## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+##
+tolerations: []
+
+## Affinity for pods assignment
+## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+##
+affinity: {}
