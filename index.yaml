@@ -1,9 +1,21 @@
 apiVersion: v1
 entries:
+  dashy:
+  - apiVersion: v2
+    appVersion: 3.1.1
+    created: "2024-12-09T13:18:07.76672+07:00"
+    description: Dashy Helm chart for Kubernetes
+    digest: 21d1e9bed25cf99c616acf178a217237f0a886358ba84eac8f67a6b3a6a337c1
+    icon: https://dashy.to/img/dashy.png
+    name: dashy
+    type: application
+    urls:
+    - https://trungtin1011.github.io/tooling/dashy-0.1.0.tgz
+    version: 0.1.0
   it-tools:
   - apiVersion: v2
     appVersion: 2024.5.13-a0bc346
-    created: "2024-10-01T12:43:44.348187+07:00"
+    created: "2024-12-09T13:18:07.767135+07:00"
     description: Useful developer tools Helm chart for Kubernetes
     digest: 5f1eae85a674bc657718bbe3691d424dcbbc1d010ee140cc939a999898d7855a
     name: it-tools
@@ -14,7 +26,7 @@ entries:
   swagger:
   - apiVersion: v2
     appVersion: v5.17.14
-    created: "2024-10-01T12:43:44.348678+07:00"
+    created: "2024-12-09T13:18:07.767715+07:00"
     description: Swagger UI Helm chart for Kubernetes
     digest: af2066726445ece0f926c7a05b91654b6506edd56caec0eb309ce66c55b90a9a
     name: swagger
@@ -45,7 +57,7 @@ entries:
   tasks-md:
   - apiVersion: v2
     appVersion: 2.4.1
-    created: "2024-10-01T12:43:44.349037+07:00"
+    created: "2024-12-09T13:18:07.768103+07:00"
     description: Task.md Helm chart for Kubernetes
     digest: a9f4a3e09c765a116042f6deb868968ba137b655810f28fb2d073a73ae52f5ac
     name: tasks-md
@@ -53,4 +65,4 @@ entries:
     urls:
     - https://trungtin1011.github.io/tooling/tasks-md-0.1.0.tgz
     version: 0.1.0
-generated: "2024-10-01T12:43:44.347665+07:00"
+generated: "2024-12-09T13:18:07.766092+07:00"
