@@ -115,7 +115,7 @@ To uninstall/delete the `my-release` deployment, run command:
 
 ```bash
 helm delete my-release
-
+```
 
 ### Dashy
 
