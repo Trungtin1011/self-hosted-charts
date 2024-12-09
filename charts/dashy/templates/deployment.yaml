@@ -1,0 +1,125 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "dashy.fullname" . }}
+  labels:
+    {{- include "dashy.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: {{ .Values.deploymentStrategy | default "Recreate" }}
+  selector:
+    matchLabels:
+      {{- include "dashy.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "dashy.labels" . | nindent 8 }}
+	{{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "dashy.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- if .Values.localIconfromS3.enabled }}
+      initContainers:
+        - name: init-downloader
+          image: "{{ .Values.localIconfromS3.image.repository }}:{{ .Values.localIconfromS3.image.tag }}"
+          imagePullPolicy: {{ .Values.localIconfromS3.image.pullPolicy }}
+          command: ["sh", "-c"]
+          args: {{ (printf "[\"aws s3 cp %s /app/user-data/item-icons --recursive\"]" .Values.localIconfromS3.s3_bucket_uri) }}
+          volumeMounts:
+          - mountPath: /app/user-data/item-icons
+            name: initdata
+            subPath: item-icons
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.containerSecurityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+          - name: PORT
+            value: {{ .Values.service.port | quote }}
+          {{- if and ( .Values.ingress.enabled ) ( .Values.ingress.useSubPath ) }}
+          - name: BASE_URL
+            value: {{ .Values.ingress.path | quote }}
+          {{- else }}
+          - name: BASE_URL
+            value: ""
+          {{- end }}
+          {{- with .Values.envConfigurations }}
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.livenessProbe.httpGet.path }}
+              port: {{ .Values.livenessProbe.httpGet.port }}
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+            successThreshold: {{ .Values.livenessProbe.successThreshold }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.readinessProbe.httpGet.path }}
+              port: {{ .Values.readinessProbe.httpGet.port }}
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
+            successThreshold: {{ .Values.readinessProbe.successThreshold }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: data
+              mountPath: /app/user-data
+              subPath: user-data
+            - mountPath: /app/user-data/conf.yml
+              subPath: conf.yml
+              name: {{ include "dashy.fullname" . }}-conf
+            {{- if .Values.localIconfromS3.enabled }}
+            - name: initdata
+              mountPath: /app/user-data/item-icons
+              subPath: item-icons
+            {{- end }}
+      volumes:
+        {{- if .Values.localIconfromS3.enabled }}
+        - name: initdata
+          emptyDir: {}
+        {{- end }}
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "dashy.fullname" . }}-data
+        - name: {{ include "dashy.fullname" . }}-conf
+          configMap:
+            name: {{ include "dashy.fullname" . }}-conf
+            items:
+              - key: conf
+                path: conf.yml
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

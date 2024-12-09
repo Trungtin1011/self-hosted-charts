@@ -1,0 +1,213 @@
+### Dashy Helm Chart for Kubernetes
+### Author: Tin Trung Ngo
+### Contact: trungtinth1011@gmail.com
+
+## Strings for naming overrides
+##
+nameOverride: ""
+fullnameOverride: ""
+
+## ServiceAccount configuration
+##
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+### Dashy configs
+### ref: https://github.com/lissy93/dashy
+###
+replicaCount: 1
+deploymentStrategy: Recreate
+persistence:
+  storageClassName: ""
+  size: 10Gi
+
+imagePullSecrets: []
+image:
+  repository: lissy93/dashy
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "release-3.1.1"
+
+# AWS S3 bucket storing local icons
+localIconfromS3:
+  enabled: false
+  s3_bucket_uri: "s3://bucket_name/folder"
+  irsa: "arn:aws:iam::account_id:role/irsa_name"
+  image:
+    repository: amazon/aws-cli
+    pullPolicy: IfNotPresent
+    tag: "2.15.15"
+
+## Configure resource requests and limits
+## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+##
+resources: {}
+
+## Configure liveness and readiness probes
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/
+##
+livenessProbe:
+  httpGet:
+    path: /
+    port: http
+  initialDelaySeconds: 40
+  periodSeconds: 90
+  timeoutSeconds: 10
+  failureThreshold: 3
+  successThreshold: 1
+
+readinessProbe:
+  httpGet:
+    path: /
+    port: http
+  initialDelaySeconds: 40
+  periodSeconds: 90
+  timeoutSeconds: 10
+  failureThreshold: 3
+  successThreshold: 1
+
+## Extra annotations for pods
+## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+##
+podAnnotations: {}
+
+## Extra labels for pods
+## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+##
+podLabels: {}
+
+## Configure Pods Security Context
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+##
+podSecurityContext:
+  {}
+  # fsGroup: 1000
+  # runAsGroup: 1000
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+## Configure Container Security Context
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
+##
+containerSecurityContext:
+  {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+## Dashy service parameters
+##
+service:
+  type: ClusterIP
+  port: 8080
+  annotations: {}
+  externalIPs: []
+  loadBalancerIP: ""
+  loadBalancerSourceRanges: []
+
+## Dashy ingress parameters
+##
+ingress:
+  enabled: false
+  useSubPath: false
+  className: ""
+  annotations:
+    {}
+    # kubernetes.io/tls-acme: "true"
+  host: chart-example.local
+  path: /
+  pathType: ImplementationSpecific
+  tls: []
+
+## Node labels selector for pods assignment
+## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
+##
+nodeSelector: {}
+
+## Tolerations for pods assignment
+## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+##
+tolerations: []
+
+## Affinity for pods assignment
+## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+##
+affinity: {}
+
+### Dashy environment variables
+### ref: https://dashy.to/docs/developing#environmental-variables
+###
+envConfigurations:
+  - name: NODE_ENV
+    value: "production"
+  # - name: HOST
+  #   value: ""
+  # - name: VUE_APP_DOMAIN
+  #   value: ""
+  # - name: INTEGRITY
+  #   value: ""
+
+### Dashy Static configuration
+### ref: https://dashy.to/docs/configuring
+###
+staticConfigurations:
+  conf: |-
+    # Page meta info, like heading, footer text and nav links
+    pageInfo:
+      title: Dashy Board
+      description: Welcome to Dashy application dashboard!
+      navLinks:
+        - title: GitHub
+          path: https://github.com/Lissy93/dashy
+        - title: Documentation
+          path: https://dashy.to/docs
+
+    # Optional app settings and configuration
+    appConfig:
+      theme: colorful
+      disableConfiguration: false
+      layout: horizontal
+      itemSize: medium
+      hideComponents:
+        hideSearch: false
+
+    # Main content - An array of sections, each containing an array of items
+    sections:
+      - name: Getting Started
+        icon: fas fa-rocket
+        items:
+          - title: Dashy Live
+            description: Development a project management links for Dashy
+            icon: https://i.ibb.co/qWWpD0v/astro-dab-128.png
+            url: https://live.dashy.to/
+            target: newtab
+          - title: GitHub
+            description: Source Code, Issues and Pull Requests
+            url: https://github.com/lissy93/dashy
+            icon: favicon
+          - title: Docs
+            description: Configuring & Usage Documentation
+            provider: Dashy.to
+            icon: far fa-book
+            url: https://dashy.to/docs
+          - title: Showcase
+            description: See how others are using Dashy
+            url: https://github.com/Lissy93/dashy/blob/master/docs/showcase.md
+            icon: far fa-grin-hearts
+          - title: Config Guide
+            description: See full list of configuration options
+            url: https://github.com/Lissy93/dashy/blob/master/docs/configuring.md
+            icon: fas fa-wrench
+          - title: Support
+            description: Get help with Dashy, raise a bug, or get in contact
+            url: https://github.com/Lissy93/dashy/blob/master/.github/SUPPORT.md
+            icon: far fa-hands-helping

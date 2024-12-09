@@ -1,0 +1,8 @@
+apiVersion: v2
+name: dashy
+description: Dashy Helm chart for Kubernetes
+icon: https://dashy.to/img/dashy.png
+type: application
+
+version: 0.1.0
+appVersion: 3.1.1
