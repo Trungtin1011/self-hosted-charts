@@ -1,0 +1,139 @@
+{{- if .Values.initSnippets.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: init-snippets
+  labels:
+    {{- include "bytestash.labels" . | nindent 4 }}
+data:
+  snippet.body: |
+  {{- range .Values.initSnippets.snippets }}
+    {{ .  | toJson }}
+  {{- end }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: init-script
+  labels:
+    {{- include "bytestash.labels" . | nindent 4 }}
+data:
+  init.sh: |-
+    #!/bin/sh
+
+    {{- if eq .Values.ingress.path "/" }}
+    ENDPOINT=bytestash:5000
+    {{- else }}
+    ENDPOINT=bytestash:5000{{ .Values.ingress.path }}
+    {{- end }}
+
+    while [ "$RESPONSE" != "200" ]; do
+
+      RESPONSE=$(curl -o /dev/null -s -w '%{http_code}\n' $ENDPOINT$(if [ "$(curl -o /dev/null -s -w '%{http_code}\n' $ENDPOINT)" == "301" ]; then echo "/"; fi))
+
+      if [ "$RESPONSE" == "200" ]; then
+
+        if [ "$(curl -X GET -s http://$ENDPOINT/api/auth/config | awk -F':' '{gsub(/[{}]/, ""); print $2}')" == "true" ]; then
+          echo "Authentication required... Trying to fetch JWT token..."
+
+          TOKEN=$(curl -X POST -s -d '{"username":"'$AUTH_USERNAME'", "password":"'$AUTH_PASSWORD'"}' -H "Content-Type: application/json" http://$ENDPOINT/api/auth/login | awk -F'"' '{print $4}')
+          if [ "$(curl -X GET -s -H "Content-Type: application/json" -H "Authorization: Bearer $TOKEN" http://$ENDPOINT/api/auth/verify | awk -F':' '{gsub(/[{}]/, ""); print $2}')" == "true" ]; then
+            echo "JWT token is valid... Checking database..."
+
+            if [ "$(curl -X GET -s -H "Content-Type: application/json" -H "Authorization: Bearer $TOKEN" http://$ENDPOINT/api/snippets)" == "[]" ]; then
+              while IFS= read -r line; do
+                curl -X POST -s -L "http://$ENDPOINT/api/snippets" -H "Content-Type: application/json" -H "Authorization: Bearer $TOKEN" -d "$line"
+              done < /config/snippet.body
+              echo ""
+              echo "Init Snippets injection completed!"
+              echo ""
+            else
+              echo "Init Snippets have already been added."
+              echo ""
+              exit 0
+            fi
+          else
+            echo "JWT token is ivalid... Please check ByteStash credential!"
+            echo ""
+          fi
+        else
+          echo "Authentication not required... Checking database..."
+
+          if [ "$(curl -X GET -s http://$ENDPOINT/api/snippets)" == "[]" ]; then
+            while IFS= read -r line; do
+              curl -X POST -s -L "http://$ENDPOINT/api/snippets" -H "Content-Type: application/json" -d "$line"
+            done < /config/snippet.body
+            echo ""
+            echo "Init Snippets injection completed!"
+            echo ""
+          else
+            echo "Init Snippets have already been added."
+            echo ""
+            exit 0
+          fi
+        fi
+      else
+        echo "Waiting for server to startup..."
+        sleep 5
+      fi
+    done
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: init-snippets
+  labels:
+    {{- include "bytestash.labels" . | nindent 4 }}
+spec:
+  ttlSecondsAfterFinished: 120
+  activeDeadlineSeconds: 300
+  template:
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end}}
+      containers:
+      - name: init
+        image: "{{ .Values.initSnippets.image.repository }}:{{ .Values.initSnippets.image.tag }}"
+        imagePullPolicy: {{ .Values.initSnippets.image.pullPolicy }}
+        command: ["/bin/sh", "-c", "/scripts/init.sh"]
+        env:
+          {{- if and ( .Values.authentication.enabled) ( eq .Values.authentication.existingAuthSecrets.secretName "" ) }}
+          - name: AUTH_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "bytestash.fullname" . }}-auth
+                key: "AUTH_USERNAME"
+          - name: AUTH_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "bytestash.fullname" . }}-auth
+                key: "AUTH_PASSWORD"
+          {{- else if and ( .Values.authentication.enabled) ( ne .Values.authentication.existingAuthSecrets.secretName "" ) }}
+          - name: AUTH_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.authentication.existingAuthSecrets.secretName | quote }}
+                key: {{ .Values.authentication.existingAuthSecrets.userKey | quote }}
+          - name: AUTH_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.authentication.existingAuthSecrets.secretName | quote }}
+                key: {{ .Values.authentication.existingAuthSecrets.pwdKey | quote }}
+          {{- end }}
+        volumeMounts:
+        - name: config-volume
+          mountPath: /config
+        - name: scripts
+          mountPath: /scripts
+      restartPolicy: Never
+      volumes:
+      - name: config-volume
+        configMap:
+          name: init-snippets
+      - name: scripts
+        configMap:
+          name: init-script
+          defaultMode: 0755
+{{- end }}
