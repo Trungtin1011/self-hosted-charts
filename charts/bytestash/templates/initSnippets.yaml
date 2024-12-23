@@ -37,12 +37,12 @@ data:
           echo "Authentication required... Trying to fetch JWT token..."
 
           TOKEN=$(curl -X POST -s -d '{"username":"'$AUTH_USERNAME'", "password":"'$AUTH_PASSWORD'"}' -H "Content-Type: application/json" http://$ENDPOINT/api/auth/login | awk -F'"' '{print $4}')
-          if [ "$(curl -X GET -s -H "Content-Type: application/json" -H "Authorization: Bearer $TOKEN" http://$ENDPOINT/api/auth/verify | awk -F':' '{gsub(/[{}]/, ""); print $2}')" == "true" ]; then
+          if [ "$(curl -X GET -s -H "Content-Type: application/json" -H "bytestashauth: Bearer $TOKEN" http://$ENDPOINT/api/auth/verify | awk -F':' '{gsub(/[{}]/, ""); print $2}')" == "true" ]; then
             echo "JWT token is valid... Checking database..."
 
-            if [ "$(curl -X GET -s -H "Content-Type: application/json" -H "Authorization: Bearer $TOKEN" http://$ENDPOINT/api/snippets)" == "[]" ]; then
+            if [ "$(curl -X GET -s -H "Content-Type: application/json" -H "bytestashauth: Bearer $TOKEN" http://$ENDPOINT/api/snippets)" == "[]" ]; then
               while IFS= read -r line; do
-                curl -X POST -s -L "http://$ENDPOINT/api/snippets" -H "Content-Type: application/json" -H "Authorization: Bearer $TOKEN" -d "$line"
+                curl -X POST -s -L "http://$ENDPOINT/api/snippets" -H "Content-Type: application/json" -H "bytestashauth: Bearer $TOKEN" -d "$line"
               done < /config/snippet.body
               echo ""
               echo "Init Snippets injection completed!"
@@ -103,12 +103,12 @@ spec:
           - name: AUTH_USERNAME
             valueFrom:
               secretKeyRef:
-                name: {{ include "bytestash.fullname" . }}-auth
+                name: {{ include "bytestash.fullname" . }}
                 key: "AUTH_USERNAME"
           - name: AUTH_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: {{ include "bytestash.fullname" . }}-auth
+                name: {{ include "bytestash.fullname" . }}
                 key: "AUTH_PASSWORD"
           {{- else if and ( .Values.authentication.enabled) ( ne .Values.authentication.existingAuthSecrets.secretName "" ) }}
           - name: AUTH_USERNAME

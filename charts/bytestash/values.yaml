@@ -26,45 +26,59 @@ persistence:
   storageClassName: ""
   size: 10Gi
 
-authentication:
-  enabled: false
-  username: bytestash
-  password: bytestash
-  jwt: ""
-  expirity: 24h
-  existingAuthSecrets:
+bytestash:
+  debug: false
+  disableAccount: false
+  disableAllAccount: false
+  allowNewAccount: false
+  jwtSecret:
     secretName: ""
-    userKey: ""
-    pwdKey: ""
     jwtKey: ""
+    expirityKey: ""
+
+### Ref: https://github.com/jordan-dalby/ByteStash/wiki/Single-Sign%E2%80%90on-Setup
+oidc_authentication:
+  enabled: false
+  name: "Single Sign-on"
+  issuerUrl: "" # Authentik, Authelia, or Keycloak
+  clientId: ""
+  clientSecret: ""
+  scopes: ""
 
 imagePullSecrets: []
 image:
   repository: ghcr.io/jordan-dalby/bytestash
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: v1.3.0
+  tag: 1.5.5
 
+# NOTE: This features is under development for new version.
+# This feature is meant for ByteStash v1.3.0 only
+### List of API_ENDPOINTS
+# 1. AUTH: '/api/auth'
+# 2. SNIPPETS: '/api/snippets'
+# 3. SHARE: '/api/share'
+# 4. PUBLIC: '/api/public/snippets'
 initSnippets:
   enabled: false
   image:
     repository: alpine/curl
     pullPolicy: IfNotPresent
     tag: "8.9.1"
-  snippets: []
-  # - title: Title 1
-  #   language: bash
-  #   description: Description 1
-  #   categories: ["linux"]
-  #   code: echo Hello World 1
-  # - title: Title 2
-  #   language: bash
-  #   description: Description 2
-  #   categories: ["linux"]
-  #   code: |
-  #     echo Hello World 2
-  #     echo Hello World 2
-  #     echo Hello World 2
+  snippets:
+    - title: Title 1
+      language: bash
+      description: Description 1
+      categories: ["linux"]
+      code: echo Hello World 1
+    - title: Title 2
+      language: bash
+      description: Description 2
+      categories: ["linux"]
+      code: |
+        echo Hello World 2
+        echo Hello World 3
+        echo Hello World 4
 
 ## Array with extra environment variables to add to the pod. For example:
 ## extraEnv:
