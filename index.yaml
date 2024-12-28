@@ -3,7 +3,7 @@ entries:
   bytestash:
   - apiVersion: v2
     appVersion: 1.5.5
-    created: "2024-12-23T20:17:47.085417+07:00"
+    created: "2024-12-28T15:29:59.242937+07:00"
     description: A ByteStash Helm chart for Kubernetes
     digest: 81e7435289c199238a04ea5b1888e9dd1297aba8514274b562135e26356e7338
     name: bytestash
@@ -13,7 +13,7 @@ entries:
     version: 0.3.0
   - apiVersion: v2
     appVersion: v1.3.0
-    created: "2024-12-23T20:17:47.084997+07:00"
+    created: "2024-12-28T15:29:59.241414+07:00"
     description: A ByteStash Helm chart for Kubernetes
     digest: da37b21aee79f35eef1919a583bdf0655b205e8383a6e61f85f851e81a27ad74
     name: bytestash
@@ -24,7 +24,7 @@ entries:
   dashy:
   - apiVersion: v2
     appVersion: 3.1.1
-    created: "2024-12-23T20:17:47.085812+07:00"
+    created: "2024-12-28T15:29:59.24335+07:00"
     description: Dashy Helm chart for Kubernetes
     digest: 21d1e9bed25cf99c616acf178a217237f0a886358ba84eac8f67a6b3a6a337c1
     icon: https://dashy.to/img/dashy.png
@@ -36,7 +36,7 @@ entries:
   it-tools:
   - apiVersion: v2
     appVersion: 2024.5.13-a0bc346
-    created: "2024-12-23T20:17:47.086067+07:00"
+    created: "2024-12-28T15:29:59.243616+07:00"
     description: Useful developer tools Helm chart for Kubernetes
     digest: 5f1eae85a674bc657718bbe3691d424dcbbc1d010ee140cc939a999898d7855a
     name: it-tools
@@ -47,7 +47,7 @@ entries:
   otlpdemo:
   - apiVersion: v2
     appVersion: demo
-    created: "2024-12-23T20:17:47.086407+07:00"
+    created: "2024-12-28T15:29:59.243963+07:00"
     description: A Helm chart for Kubernetes OpenTelemetry Demo application
     digest: 4959b979c38ea67508b6d890308a395c21a1fd7a084d5add0397566588b66f4f
     name: otlpdemo
@@ -55,10 +55,21 @@ entries:
     urls:
     - https://trungtin1011.github.io/tooling/otlpdemo-0.1.0.tgz
     version: 0.1.0
+  statping:
+  - apiVersion: v2
+    appVersion: v0.90.78
+    created: "2024-12-28T15:29:59.244326+07:00"
+    description: A Helm chart for Statping-ng deployment on Kubernetes
+    digest: 913725858a99b7326af38cee5d3b86911177fad76197e1522c3967f3a0add37f
+    name: statping
+    type: application
+    urls:
+    - https://trungtin1011.github.io/tooling/statping-0.1.0.tgz
+    version: 0.1.0
   swagger:
   - apiVersion: v2
     appVersion: v5.17.14
-    created: "2024-12-23T20:17:47.086799+07:00"
+    created: "2024-12-28T15:29:59.244725+07:00"
     description: Swagger UI Helm chart for Kubernetes
     digest: af2066726445ece0f926c7a05b91654b6506edd56caec0eb309ce66c55b90a9a
     name: swagger
@@ -89,7 +100,7 @@ entries:
   tasks-md:
   - apiVersion: v2
     appVersion: 2.4.1
-    created: "2024-12-23T20:17:47.087067+07:00"
+    created: "2024-12-28T15:29:59.245+07:00"
     description: Task.md Helm chart for Kubernetes
     digest: a9f4a3e09c765a116042f6deb868968ba137b655810f28fb2d073a73ae52f5ac
     name: tasks-md
@@ -97,4 +108,4 @@ entries:
     urls:
     - https://trungtin1011.github.io/tooling/tasks-md-0.1.0.tgz
     version: 0.1.0
-generated: "2024-12-23T20:17:47.084446+07:00"
+generated: "2024-12-28T15:29:59.240861+07:00"

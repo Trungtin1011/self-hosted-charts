@@ -20,19 +20,16 @@ To install Helm, see [Helm Installation guide](https://helm.sh/docs/intro/instal
 
 ## Installation and Configuration
 
-### Swagger UI
-
-To add Swagger UI helm repository, run command:
+To add the helm repository, run command:
 
 ```bash
 helm repo add tooling https://trungtin1011.github.io/tooling/
 ```
 
-
-To install the Swagger UI helm chart with a release name `my-release` in `swagger` namespace, run command:
+To install a helm chart with a release name `my-release` in `ns` namespace, run command:
 
 ```bash
-helm install -n swagger --create-namespace my-release tooling/swagger
+helm install -n ns --create-namespace my-release tooling/chart_name
 ```
 
 
@@ -40,146 +37,10 @@ To update latest changes of the charts from the Helm repository, run commands:
 ```bash
 helm repo update
 
-helm -n swagger upgrade my-release tooling/swagger
+helm -n ns upgrade my-release tooling/chart_name
 ```
 
-To configure the Swagger UI deployment, the configurable parameters for Swagger UI Helm chart can be found in `values.yaml` values file. Those parameters can be set via `--set` flag during installation or configured by editing the `values.yaml` directly.
-
-
-To uninstall/delete the `my-release` deployment, run command:
-
-```bash
-helm delete my-release
-```
-
-
-### IT Tools
-
-To add IT Tools helm repository, run command:
-
-```bash
-helm repo add tooling https://trungtin1011.github.io/tooling/
-```
-
-
-To install the IT Tools helm chart with a release name `my-release` in `tooling` namespace, run command:
-
-```bash
-helm install -n tooling --create-namespace my-release tooling/it-tools
-```
-
-
-To update latest changes of the charts from the Helm repository, run commands:
-```bash
-helm repo update
-
-helm -n tooling upgrade my-release tooling/it-tools
-```
-
-
-To configure the IT Tools deployment, the configurable parameters of the it-tools-helm chart can be found in `values.yaml` values file. Those parameters can be set via `--set` flag during installation or configured by editing the `values.yaml` directly.
-
-
-To uninstall/delete the `my-release` deployment, run command:
-
-```bash
-helm delete my-release
-```
-
-
-### Tasks.md
-
-To add Tasks.md helm repository, run command:
-
-```bash
-helm repo add tooling https://trungtin1011.github.io/tooling/
-```
-
-
-To install the Tasks.md helm chart with a release name `my-release` in `task` namespace, run command:
-
-```bash
-helm install -n task --create-namespace my-release tooling/tasks-md
-```
-
-
-To update latest changes of the charts from the Helm repository, run commands:
-```bash
-helm repo update
-
-helm -n task upgrade my-release tooling/tasks-md
-```
-
-To configure the Tasks.md deployment, the configurable parameters can be found in `values.yaml` values file. Those parameters can be set via `--set` flag during installation or configured by editing the `values.yaml` directly.
-
-
-To uninstall/delete the `my-release` deployment, run command:
-
-```bash
-helm delete my-release
-```
-
-### Dashy
-
-To add Dashy helm repository, run command:
-
-```bash
-helm repo add tooling https://trungtin1011.github.io/tooling/
-```
-
-
-To install the Dashy helm chart with a release name `my-release` in `task` namespace, run command:
-
-```bash
-helm install -n task --create-namespace my-release tooling/dashy
-```
-
-
-To update latest changes of the charts from the Helm repository, run commands:
-```bash
-helm repo update
-
-helm -n task upgrade my-release tooling/dashy
-```
-
-To configure the Dashy deployment, the configurable parameters can be found in `values.yaml` values file. Those parameters can be set via `--set` flag during installation or configured by editing the `values.yaml` directly.
-
-
-To uninstall/delete the `my-release` deployment, run command:
-
-```bash
-helm delete my-release
-```
-
-### OpenTelemetry Demo
-
-Demo application for OpenTelemetry Instrumentation.
-
-
-### ByteStash
-
-To add ByteStash helm repository, run command:
-
-```bash
-helm repo add tooling https://trungtin1011.github.io/tooling/
-```
-
-
-To install the ByteStash helm chart with a release name `my-release` in `task` namespace, run command:
-
-```bash
-helm install -n task --create-namespace my-release tooling/dashy
-```
-
-
-To update latest changes of the charts from the Helm repository, run commands:
-```bash
-helm repo update
-
-helm -n task upgrade my-release tooling/bytestash
-```
-
-To configure the ByteStash deployment, the configurable parameters can be found in `values.yaml` values file. Those parameters can be set via `--set` flag during installation or configured by editing the `values.yaml` directly.
+To configure the Helm chart deployment, the configurable parameters can be found in `values.yaml` values file. Those parameters can be set via `--set` flag during installation or configured by editing the `values.yaml` directly.
 
 
 To uninstall/delete the `my-release` deployment, run command:
