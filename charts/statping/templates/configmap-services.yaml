@@ -1,0 +1,12 @@
+{{- if .Values.serviceConfigs -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "statping.fullname" . }}-services
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "statping.labels" . | nindent 4 }}
+data:
+  services.yml: |-
+    {{- toYaml .Values.serviceConfigs | nindent 4}}
+{{ end }}
