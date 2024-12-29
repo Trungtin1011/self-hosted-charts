@@ -1,4 +1,3 @@
-{{- if .Values.customServiceConfigs -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -6,17 +5,11 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "statping.labels" . | nindent 4 }}
+{{- if .Values.customServiceConfigs }}
 data:
   services.yml: |-
     {{- toYaml .Values.customServiceConfigs | nindent 4}}
-{{- else}}
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ include "statping.fullname" . }}-services
-  namespace: {{ .Release.Namespace }}
-  labels:
-    {{- include "statping.labels" . | nindent 4 }}
+{{- else }}
 data:
   services.yml: |
     x-httpservice: &httpservice
