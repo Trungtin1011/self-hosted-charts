@@ -35,10 +35,14 @@ persistence:
   storageClassName: ""
   size: 10Gi
 
+### Setting VERBOSE environment variable does not take any affect
+### Have to set through command line argument with this `loglevel` value
+loglevel: 2 # Warn (1) -> Info (2) -> Debug (3) -> Trace (4)
+
 ### Ref: https://github.com/statping-ng/statping-ng/wiki/Environment-Variables
 envConfigs:
   LANGUAGE: "en"
-  SAMPLE_DATA: "true"
+  SAMPLE_DATA: "false"
   DISABLE_LOGS: "false"
   ALLOW_REPORTS: "false"
   NAME: "Statping"
@@ -74,6 +78,10 @@ extraEnv: []
 ##     name: extra-secret
 ##     key: db-password
 extraEnvSecrets: {}
+
+## List of additional cli arguments to configure the statping-ng instance
+## for example: --ip, --config, etc.
+extraArgs: []
 
 ## Configure resource requests and limits
 ## ref: http://kubernetes.io/docs/user-guide/compute-resources/

@@ -60,6 +60,13 @@ spec:
             - configMapRef:
                 name: {{ include "statping.fullname" . }}-configs
           {{- end }}
+          command: ["/usr/local/bin/statping"]
+          args:
+            - "--port={{ .Values.service.port }}"
+            - "--verbose={{ .Values.loglevel }}"
+            {{- if .Values.extraArgs }}
+            {{- .Values.extraArgs | toYaml | nindent 12 }}
+            {{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}
