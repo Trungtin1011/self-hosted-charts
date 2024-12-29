@@ -1,4 +1,4 @@
-{{- if .Values.serviceConfigs -}}
+{{- if .Values.customServiceConfigs -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -8,5 +8,48 @@ metadata:
     {{- include "statping.labels" . | nindent 4 }}
 data:
   services.yml: |-
-    {{- toYaml .Values.serviceConfigs | nindent 4}}
+    {{- toYaml .Values.customServiceConfigs | nindent 4}}
+{{- else}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "statping.fullname" . }}-services
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "statping.labels" . | nindent 4 }}
+data:
+  services.yml: |
+    x-httpservice: &httpservice
+      type: http
+      method: GET
+      check_interval: 45
+      timeout: 10
+      expected_status: 200
+      allow_notifications: true
+      notify_after: 2
+      notify_all_changes: true
+      public: true
+      redirect: true
+
+    x-tcpservice: &tcpservice
+      type: tcp
+      check_interval: 60
+      timeout: 15
+      allow_notifications: true
+      notify_after: 0
+      notify_all_changes: true
+      public: true
+      redirect: true
+
+    services:
+      {{- range $index, $value := .Values.httpServices }}
+      - name: {{ $value.name }}
+        domain: {{ $value.domain }}
+        <<: *httpservice
+      {{- end }}
+      {{- range $index, $value := .Values.tcpServices }}
+      - name: {{ $value.name }}
+        domain: {{ $value.domain }}
+        <<: *tcpservice
+      {{- end }}
 {{ end }}

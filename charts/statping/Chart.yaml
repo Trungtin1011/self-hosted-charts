@@ -4,5 +4,5 @@ description: A Helm chart for Statping-ng deployment on Kubernetes
 
 type: application
 
-version: 0.1.0
-appVersion: v0.90.78
+version: 0.1.1
+appVersion: 0.91.0

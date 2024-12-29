@@ -22,7 +22,14 @@ serviceAccount:
 ### ref: https://github.com/statping-ng/statping-ng/wiki
 ###
 replicaCount: 1
-testMode: false
+imagePullSecrets: []
+image:
+  repository: ghcr.io/statping-ng/statping-ng
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: 0.91.0
+
+### Data volume
 persistence:
   enabled: false
   storageClassName: ""
@@ -38,15 +45,18 @@ envConfigs:
   DESCRIPTION: "Applications Status"
   DB_CONN: "sqlite"
 
-### Ref: https://github.com/statping-ng/statping-ng/wiki/Bulk-Import-Services
-serviceConfigs: {}
+### Services list to check TCP and HTTP GET connection
+tcpServices: []
+httpServices:
+  - name: Google
+    domain: https://www.google.com
+  - name: Statping
+    domain: https://github.com/statping/statping
+  - name: Statping-ng
+    domain: https://github.com/statping-ng/statping-ng
 
-imagePullSecrets: []
-image:
-  repository: adamboutcher/statping-ng
-  pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: v0.90.78
+### Ref: https://github.com/statping-ng/statping-ng/wiki/Bulk-Import-Services
+customServiceConfigs: {}
 
 ## Array with extra environment variables to add to the pod. For example:
 ## extraEnv:
