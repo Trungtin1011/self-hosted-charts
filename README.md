@@ -9,7 +9,6 @@ This [Helm](https://github.com/kubernetes/helm) chart supports installation of t
 4. [Dashy](https://github.com/lissy93/dashy)
 5. [OpenTelemetry Demo](https://github.com/Trungtin1011/opentelemetry-demo)
 6. [ByteStash](https://github.com/jordan-dalby/ByteStash)
-7. [Statping-ng](https://github.com/statping-ng/statping-ng)
 
 
 The prerequisites for this Helm chart is a working **Kubernetes Cluster** and **Helm** installed.
@@ -24,7 +23,7 @@ To install Helm, see [Helm Installation guide](https://helm.sh/docs/intro/instal
 To add the helm repository, run command:
 
 ```bash
-helm repo add tooling https://trungtin1011.github.io/tooling/
+helm repo add tooling https://trungtin1011.github.io/self-hosted-charts/
 ```
 
 To install a helm chart with a release name `my-release` in `ns` namespace, run command:
@@ -49,6 +48,7 @@ To uninstall/delete the `my-release` deployment, run command:
 ```bash
 helm delete my-release
 ```
+
 
 ## License
 
