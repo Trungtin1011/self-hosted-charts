@@ -23,7 +23,7 @@ To install Helm, see [Helm Installation guide](https://helm.sh/docs/intro/instal
 To add the helm repository, run command:
 
 ```bash
-helm repo add tooling https://trungtin1011.github.io/tooling/
+helm repo add tooling https://trungtin1011.github.io/self-hosted-charts/
 ```
 
 To install a helm chart with a release name `my-release` in `ns` namespace, run command:
